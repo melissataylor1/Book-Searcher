@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
-// importing graphQL enablers
-import { useMutation } from "@apollo/client";
+
+import { useMutation } from "@apollo/react-hooks";
 import { ADD_USER } from "../utils/mutations";
 import Auth from "../utils/auth";
 
@@ -16,16 +16,14 @@ const SignupForm = () => {
   const [validated] = useState(false);
   // set state for alert
   const [showAlert, setShowAlert] = useState(false);
-  // set mutation
-  const [signup] = useMutation(ADD_USER);
 
-  // input change function
+  const [addUser] = useMutation(ADD_USER);
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setUserFormData({ ...userFormData, [name]: value });
   };
 
-  // form submit function
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
@@ -37,15 +35,16 @@ const SignupForm = () => {
     }
 
     try {
-      // uses graphQL to setup a user and obtain user token
-      const { data } = await signup({ variables: { ...userFormData } });
-      // saves token to local storage
+      const { data } = await addUser({
+        variables: { ...userFormData },
+      });
+
       Auth.login(data.addUser.token);
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.error(e);
       setShowAlert(true);
     }
-    // clears form
+
     setUserFormData({
       username: "",
       email: "",
@@ -67,7 +66,7 @@ const SignupForm = () => {
           Something went wrong with your signup!
         </Alert>
 
-        <Form.Group className="mb-3">
+        <Form.Group>
           <Form.Label htmlFor="username">Username</Form.Label>
           <Form.Control
             type="text"
@@ -82,7 +81,7 @@ const SignupForm = () => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group>
           <Form.Label htmlFor="email">Email</Form.Label>
           <Form.Control
             type="email"
@@ -97,7 +96,7 @@ const SignupForm = () => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group>
           <Form.Label htmlFor="password">Password</Form.Label>
           <Form.Control
             type="password"
