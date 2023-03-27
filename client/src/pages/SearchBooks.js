@@ -59,7 +59,7 @@ const SearchBooks = () => {
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
 
     try {
-      const response = await saveBook({ variables: { bookToSave } });
+      const { data } = await saveBook({ variables: bookToSave });
 
       if (!response.ok) {
         throw new Error("something went wrong!");
